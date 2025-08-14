@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -10,12 +11,9 @@ app.use(express.json());
 app.use(express.static(__dirname));
 
 
-mongoose.connect(
-  'mongodb+srv://17singhatul:ITfvJinkr5pOZoHG@cluster0.8wslpsr.mongodb.net/data',
-  { useNewUrlParser: true, useUnifiedTopology: true }
-)
-.then(() => console.log('✅ Connected to MongoDB Atlas'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.error("MongoDB Error:", err));
 
 
 const messageSchema = new mongoose.Schema({
