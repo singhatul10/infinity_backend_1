@@ -12,15 +12,26 @@ app.get('/', (req, res)=>{
 })
 
 app.post('/submit', (req, res) => {
-  const data = req.body;
-  let existingData = [];
-    if (fs.existsSync('data.json')) {
-    existingData = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-  }
+   try {
+    let existingData = [];
 
-  existingData.push(data);
-  fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-  res.send('<h1>Message Saved </h1><a href="/">Go Back</a>');
+    if (fs.existsSync("data.json")) {
+      const fileData = fs.readFileSync("data.json", "utf-8");
+      if (fileData.trim()) {
+        const parsed = JSON.parse(fileData);
+        existingData = Array.isArray(parsed) ? parsed : []; // Ensure array
+      }
+    }
+
+    existingData.push(req.body); // Now safe to push
+
+    fs.writeFileSync("data.json", JSON.stringify(existingData, null, 2));
+    res.status(200).send({ message: "Data saved successfully" });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "Internal server error" });
+  }
 });
 
 app.listen(port, ()=>{
